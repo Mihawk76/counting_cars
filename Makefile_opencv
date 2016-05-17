@@ -1,0 +1,3 @@
+all:
+	g++ bg.cpp -o bg `pkg-config opencv --cflags --libs`
+	g++ intruder_1.cpp -o image/intruder `pkg-config opencv --cflags --libs`
