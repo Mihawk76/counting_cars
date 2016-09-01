@@ -37,7 +37,8 @@ string vehicleType = "";
 string vehicleScreen = "";
 Point pusLin[2000];
 //int areaObject[2000];
-Point boundary = Point(2000,2000);
+Point boundary1 = Point(0,0);
+Point boundary2 = Point(2000,2000);
 //float pusLinY[2000];
 //Put Var in image
 string text = "Funny text inside the box";
@@ -189,7 +190,7 @@ void processVideo(char* videoFilename)
 					countPusLin++;
 					// Limiting the detection into one box and moving one array to another one.
 					// Putting all the moving object to one array 
-					if ( center[i].x > 0 && center[i].x < boundary.x && center[i].y > 0 && center[i].y < boundary.y)
+					if ( center[i].x > boundary1.x && center[i].x < boundary2.x && center[i].y > boundary1.y && center[i].y < boundary2.y)
 					{
 						movingObject[countMovingObject].positionObject = center[i];
 						movingObject[countMovingObject].areaObject = contourArea(contours[i]);
@@ -205,17 +206,17 @@ void processVideo(char* videoFilename)
 	int carIn = 0;
 	int count = 0;
 	//Boundary Box for motion tracking
-	line( frame, Point(1, 1) , Point(1,boundary.y), Scalar( 0, 0, 0 ), 2, 8 );
-	line( frame, Point(1, boundary.y) , boundary, Scalar( 0, 0, 0 ), 2, 8 );
-	line( frame, boundary , Point(boundary.x,0), Scalar( 0, 0, 0 ), 2, 8 );
-	line( frame, Point(boundary.x, 1) , Point(1,1), Scalar( 0, 0, 0 ), 2, 8 );
+	line( frame, boundary1 , Point(boundary1.x,boundary2.y), Scalar( 0, 0, 0 ), 2, 8 );
+	line( frame, Point(boundary1.x, boundary2.y) , boundary2, Scalar( 0, 0, 0 ), 2, 8 );
+	line( frame, boundary2 , Point(boundary2.x,boundary1.y), Scalar( 0, 0, 0 ), 2, 8 );
+	line( frame, Point(boundary2.x, boundary1.y) , boundary1, Scalar( 0, 0, 0 ), 2, 8 );
 	//Boundary Box for counting cars
 	int yCarMin = 250;
 	int yCarMax = 300;
 	int yBefore = 200;
-	line( frame, Point(1, yCarMin) , Point(boundary.x,yCarMin), Scalar( 0, 0, 255 ), 2, 8 );
-	line( frame, Point(1, yCarMax) , Point(boundary.x,yCarMax), Scalar( 0, 0, 255 ), 2, 8 );
-	line( frame, Point(1, yBefore) , Point(boundary.x,yBefore), Scalar( 0, 255, 255 ), 2, 8 );
+	line( frame, Point(1, yCarMin) , Point(boundary2.x,yCarMin), Scalar( 0, 0, 255 ), 2, 8 );
+	line( frame, Point(1, yCarMax) , Point(boundary2.x,yCarMax), Scalar( 0, 0, 255 ), 2, 8 );
+	line( frame, Point(1, yBefore) , Point(boundary2.x,yBefore), Scalar( 0, 255, 255 ), 2, 8 );
 	
 	int countObject = 0;
 	totalMovingObject = 0;
@@ -243,7 +244,7 @@ void processVideo(char* videoFilename)
 				( ((movingObject[totalMovingObject].positionObject).y) < yCarMax 
 		     && ((movingObject[totalMovingObject].positionObject).y) > yCarMin 
 		     && ((movingObject[totalMovingObject].positionObject).x) > 1 
-		     && ((movingObject[totalMovingObject].positionObject).x) < boundary.x 
+		     && ((movingObject[totalMovingObject].positionObject).x) < boundary2.x 
 				)
 				{
 					if //Condition that is allign with the desired movement
@@ -251,7 +252,7 @@ void processVideo(char* videoFilename)
 					  ((movingObject[totalMovingObject-loop].positionObject).y) < yCarMin 
 					  && ((movingObject[totalMovingObject-loop].positionObject).y) > yBefore 
 					  && ((movingObject[totalMovingObject-loop].positionObject).x) > 1 
-					  && ((movingObject[totalMovingObject-loop].positionObject).x) < boundary.x )
+					  && ((movingObject[totalMovingObject-loop].positionObject).x) < boundary2.x )
 					{
 						//Adding variable is it is the same with the correct movement
 						carIn++;
