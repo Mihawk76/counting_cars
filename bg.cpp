@@ -37,7 +37,7 @@ string vehicleType = "";
 string vehicleScreen = "";
 Point pusLin[2000];
 //int areaObject[2000];
-Point boundary1 = Point(0,0);
+Point boundary1 = Point(1,1);
 Point boundary2 = Point(2000,2000);
 //float pusLinY[2000];
 //Put Var in image
