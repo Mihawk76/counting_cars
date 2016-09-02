@@ -1,1 +1,1 @@
-./bg -vid pintu2.ogg
+./bg -vid pintu4.ogg

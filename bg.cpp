@@ -37,8 +37,8 @@ string vehicleType = "";
 string vehicleScreen = "";
 Point pusLin[2000];
 //int areaObject[2000];
-Point boundary1 = Point(1,1);
-Point boundary2 = Point(2000,2000);
+Point boundary1 = Point(149,9);
+Point boundary2 = Point(314,235);
 //float pusLinY[2000];
 //Put Var in image
 string text = "Funny text inside the box";
@@ -175,7 +175,7 @@ void processVideo(char* videoFilename)
   {
 		areaObject.push_back(i);
   	// Filtering Blob that is detected to delete false positif 
-		if(contourArea(contours[i]) >= 2000)
+		if(contourArea(contours[i]) >= 800)
 		{
 			approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
     	boundRect[i] = boundingRect( Mat(contours_poly[i]) );
@@ -237,9 +237,9 @@ void processVideo(char* videoFilename)
 			&& ((movingObject[totalMovingObject-loop].positionObject).y) 
 			> (((movingObject[totalMovingObject].positionObject).y)-bound) ) 
 			{
-				line( frame, (movingObject[totalMovingObject].positionObject) 
+			/*	line( frame, (movingObject[totalMovingObject].positionObject) 
 				, (movingObject[totalMovingObject-loop].positionObject), 
-				Scalar( 0, 0, 0 ), 2, 8 );
+				Scalar( 0, 0, 0 ), 2, 8 );*/
 				if // this collect the coordinat that passes the first line
 				( ((movingObject[totalMovingObject].positionObject).y) < yCarMax 
 		     && ((movingObject[totalMovingObject].positionObject).y) > yCarMin 
