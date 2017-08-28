@@ -120,6 +120,37 @@ int main(int argc, char* argv[])
     destroyAllWindows();
     return EXIT_SUCCESS;
 }
+Rect combineRect(cv::Rect Rect1, cv::Rect Rect2)
+{
+	Point tlCombine, brCombine;
+	tlCombine = Rect1.tl();
+	if (Rect1.tl().x<Rect2.tl().x){
+		tlCombine.x = Rect1.tl().x;
+	}
+	else{
+		tlCombine.x = Rect2.tl().x;
+	}
+	if (Rect1.tl().y>Rect2.tl().y){
+		tlCombine.y = Rect1.tl().y;
+	}
+	else{
+		tlCombine.y = Rect2.tl().y;
+	}
+	if (Rect1.br().x>Rect2.br().x){
+		brCombine.x = Rect1.br().x;
+	}
+	else{
+		brCombine.x = Rect2.br().x;
+	}
+	if (Rect1.tl().y<Rect2.tl().y){
+		tlCombine.y = Rect1.tl().y;
+	}
+	else{
+		tlCombine.y = Rect2.tl().y;
+	}
+	Rect Combine(tlCombine, brCombine);	
+	return Combine;	
+}
 void processVideo(char* videoFilename) 
 {
 	//create the capture object
@@ -151,6 +182,7 @@ void processVideo(char* videoFilename)
   imshow("Frame", frame);
   imshow("FG Mask MOG 2", fgMaskMOG2);
 	cv::erode(fgMaskMOG2,fore,cv::Mat());
+  imshow("erode", fore);
 	cv::dilate(fore,fore,cv::Mat());
 	//cv::dilate(fgMaskMOG2,fore,cv::Mat());
 	cv::imshow("Fore", fore);
@@ -167,6 +199,10 @@ void processVideo(char* videoFilename)
 	//Approximate contours to polygons + get bounding rects and circles
   vector<vector<Point> > contours_poly( contours.size() );
 	vector<Rect> boundRect( contours.size() );
+	vector<Rect> Rect1( contours.size() );
+	vector<Rect> Rect2( contours.size() );
+	vector<Rect> Rect3( contours.size() );
+	vector<Rect> filteredRect( contours.size() );
 	vector<Point2f>center( contours.size() );
   vector<float>radius( contours.size() );
 	
@@ -175,12 +211,40 @@ void processVideo(char* videoFilename)
   {
 		areaObject.push_back(i);
   	// Filtering Blob that is detected to delete false positif 
-		if(contourArea(contours[i]) >= 800)
+		if(contourArea(contours[i]) >= 2)
 		{
 			approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+			Moments m1 = moments(Mat(contours_poly[i]), false);
+			//Point x(x1,y1);
     	boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+      float x1 = m1.m10 / m1.m00;
+      float y1 = m1.m01 / m1.m00;
+      //float x3 = ((boundRect[i].tl().x + boundRect[i].br().x)/2);
+      //float y3 = ((boundRect[i].tl().y + boundRect[i].br().y)/2);
+			for( int j = 0; j < contours.size(); j++ )
+  		{
+      	if ( j!=i ) { 
+					Moments m2 = moments(Mat(contours_poly[j]), false);
+      		float x2 = m2.m10 / m2.m00;
+      		float y2 = m2.m01 / m2.m00;
+					float distance = sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+					if ( distance < 50 && boundRect[i].area() > 400){
+						Rect1[i] = boundingRect( Mat(contours_poly[i]) );
+						Rect2[i] = boundingRect( Mat(contours_poly[j]) );
+						boundRect[i] = Rect1[i] | Rect2[i];
+						filteredRect[i] = Rect1[i] | Rect2[i];
+						cout << "area " << boundRect[i].size() << endl;
+						}
+				}	
+			}
+			if( boundRect[i].area() > 400){
+				filteredRect[i] = boundRect[i];
+			}
+			//if( boundRect[i].area() > 50){
+			//		filteredRect[i] = boundRect[i];
+			//}
     	minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );		
-			float x = center[i].x;
+			/*float x = center[i].x;
 			float y = center[i].y;
 			if (countPusLin <= 2000)
 			{
@@ -197,34 +261,34 @@ void processVideo(char* videoFilename)
 						countMovingObject++;
 					}
 				}
-			}
+			}*/
   	}
   }
-	int baseline=0;
-	Size textSize = getTextSize(text, fontFace,fontScale, thickness, &baseline);
-	baseline += thickness;
-	int carIn = 0;
-	int count = 0;
+	//int baseline=0;
+	//Size textSize = getTextSize(text, fontFace,fontScale, thickness, &baseline);
+	//baseline += thickness;
+	//int carIn = 0;
+	//int count = 0;
 	//Boundary Box for motion tracking
-	line( frame, boundary1 , Point(boundary1.x,boundary2.y), Scalar( 0, 0, 0 ), 2, 8 );
-	line( frame, Point(boundary1.x, boundary2.y) , boundary2, Scalar( 0, 0, 0 ), 2, 8 );
-	line( frame, boundary2 , Point(boundary2.x,boundary1.y), Scalar( 0, 0, 0 ), 2, 8 );
-	line( frame, Point(boundary2.x, boundary1.y) , boundary1, Scalar( 0, 0, 0 ), 2, 8 );
+	//line( frame, boundary1 , Point(boundary1.x,boundary2.y), Scalar( 0, 0, 0 ), 2, 8 );
+	//line( frame, Point(boundary1.x, boundary2.y) , boundary2, Scalar( 0, 0, 0 ), 2, 8 );
+	//line( frame, boundary2 , Point(boundary2.x,boundary1.y), Scalar( 0, 0, 0 ), 2, 8 );
+	//line( frame, Point(boundary2.x, boundary1.y) , boundary1, Scalar( 0, 0, 0 ), 2, 8 );
 	//Boundary Box for counting cars
-	int yCarMin = 250;
-	int yCarMax = 300;
-	int yBefore = 200;
-	line( frame, Point(1, yCarMin) , Point(boundary2.x,yCarMin), Scalar( 0, 0, 255 ), 2, 8 );
-	line( frame, Point(1, yCarMax) , Point(boundary2.x,yCarMax), Scalar( 0, 0, 255 ), 2, 8 );
-	line( frame, Point(1, yBefore) , Point(boundary2.x,yBefore), Scalar( 0, 255, 255 ), 2, 8 );
+	//int yCarMin = 250;
+	//int yCarMax = 300;
+	//int yBefore = 200;
+	//line( frame, Point(1, yCarMin) , Point(boundary2.x,yCarMin), Scalar( 0, 0, 255 ), 2, 8 );
+	//line( frame, Point(1, yCarMax) , Point(boundary2.x,yCarMax), Scalar( 0, 0, 255 ), 2, 8 );
+	//line( frame, Point(1, yBefore) , Point(boundary2.x,yBefore), Scalar( 0, 255, 255 ), 2, 8 );
 	
-	int countObject = 0;
-	totalMovingObject = 0;
-	while ( totalMovingObject < (countMovingObject-1) )
+	//int countObject = 0;
+	//totalMovingObject = 0;
+	/*while ( totalMovingObject < (countMovingObject-1) )
 	{
 		int bound = 30; // the variable that we consider the maximal jump of distance an obj travel
-		/* Filtering which koordinat is from the same Object, the idea is the same object move in 
-		limited distance in a short time so we assume that if it is under bound than it is from the same object*/	
+		 //Filtering which koordinat is from the same Object, the idea is the same object move in 
+		//limited distance in a short time so we assume that if it is under bound than it is from the same object	
 		int loop = 0;
 		while ( loop <= 10 )
 		{
@@ -237,9 +301,9 @@ void processVideo(char* videoFilename)
 			&& ((movingObject[totalMovingObject-loop].positionObject).y) 
 			> (((movingObject[totalMovingObject].positionObject).y)-bound) ) 
 			{
-			/*	line( frame, (movingObject[totalMovingObject].positionObject) 
+				line( frame, (movingObject[totalMovingObject].positionObject) 
 				, (movingObject[totalMovingObject-loop].positionObject), 
-				Scalar( 0, 0, 0 ), 2, 8 );*/
+				Scalar( 0, 0, 0 ), 2, 8 );
 				if // this collect the coordinat that passes the first line
 				( ((movingObject[totalMovingObject].positionObject).y) < yCarMax 
 		     && ((movingObject[totalMovingObject].positionObject).y) > yCarMin 
@@ -283,35 +347,38 @@ void processVideo(char* videoFilename)
 		}
 		totalMovingObject++;
 	}
+	*/
     totalMovingObject = 0;
-	for (int start = 0; start <= countAreaObject; start++)
+	/*for (int start = 0; start <= countAreaObject; start++)
 		{
 			area << start << " area is " << areaObject[start] << " jumlah objek adalah " << countAreaObject << endl;
       cout << start << " area is " << areaObject[start] << " jumlah objek adalah " << countAreaObject 
 			<< " jenis " << vehicleScreen << endl;
-		}
+		}*/
 	// then put the text itself
 	stringstream oss;
-	oss << " amount " << carIn << " type " << vehicleScreen;
+	//oss << " amount " << carIn << " type " << vehicleScreen;
 	//pusat << "Car that pass " << carIn << endl;
-	text = oss.str();
-	putText(frame, text, Point(10, 350) , fontFace, fontScale, Scalar( 0, 0, 0 ), thickness, 8);
+	//text = oss.str();
+	//putText(frame, text, Point(10, 350) , fontFace, fontScale, Scalar( 0, 0, 0 ), thickness, 8);
 	// Draw polygonal contour + bonding rects + circles
   	Mat drawing = Mat::zeros( frame.size(), CV_8UC3 );
   	for( int i = 0; i< contours.size(); i++ )
     	{
-		Scalar color_1 = Scalar(0,0,0);
-       		drawContours( frame, contours_poly, i, color_1, 1, 8, vector<Vec4i>(), 0, Point() );
-       		rectangle( frame, boundRect[i].tl(), boundRect[i].br(), color_1, 2, 8, 0 );
-       		circle( frame, center[i], (int)radius[i], color_1, 2, 8, 0 );
-		
+					Scalar color_1 = Scalar(0,254,254);
+					Scalar color_2 = Scalar(0,0,0);
        		Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-       		drawContours( drawing, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
-       		rectangle( drawing, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0 );
-       		circle( drawing, center[i], (int)radius[i], color, 2, 8, 0 );
+       		drawContours( frame, contours_poly, i, color_1, 1, 8, vector<Vec4i>(), 0, Point() );
+       		//rectangle( frame, boundRect[i].tl(), boundRect[i].br(), color_1, 2, 8, 0 );
+       		rectangle( frame, filteredRect[i].tl(), filteredRect[i].br(), color_2, 2, 8, 0 );
+       		//circle( frame, center[i], (int)radius[i], color_1, 2, 8, 0 );
 		
+       		//drawContours( drawing, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
+       		//rectangle( drawing, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0 );
+       		//circle( drawing, center[i], (int)radius[i], color, 2, 8, 0 );
+					
      	}
-	imshow( "Contours", drawing );
+	//imshow( "Contours", drawing );
 	imshow( "Final Form", frame );
 	Mat im;
 	//transisition to blob

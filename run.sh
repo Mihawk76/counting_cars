@@ -1,1 +1,1 @@
-./bg -vid pintu4.ogg
+./bg -vid TownCentreXVID.avi
