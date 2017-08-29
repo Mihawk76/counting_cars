@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
     }
     //create GUI windows
     namedWindow("Frame");
-    namedWindow("FG Mask MOG 2");
+    //namedWindow("FG Mask MOG 2");
     //create Background Subtractor objects
     pMOG2 = createBackgroundSubtractorMOG2(); //MOG2 approach
     if(strcmp(argv[1], "-vid") == 0) {
@@ -153,6 +153,7 @@ Rect combineRect(cv::Rect Rect1, cv::Rect Rect2)
 }
 void processVideo(char* videoFilename) 
 {
+	int totalPeople;
 	//create the capture object
 	VideoCapture capture(videoFilename);
 	if(!capture.isOpened())
@@ -164,6 +165,7 @@ void processVideo(char* videoFilename)
   //read input data. ESC or 'q' for quitting
   while( (char)keyboard != 'q' && (char)keyboard != 27 )
 	{
+		totalPeople = 0;
 		//read the current frame
 		if(!capture.read(frame)) {
 		cerr << "Unable to read next frame." << endl;
@@ -179,13 +181,12 @@ void processVideo(char* videoFilename)
   string frameNumberString = ss.str();
   putText(frame, frameNumberString.c_str(), cv::Point(15, 15), FONT_HERSHEY_SIMPLEX, 0.5 , cv::Scalar(0,0,0));
   //show the current frame and the fg masks
-  imshow("Frame", frame);
-  imshow("FG Mask MOG 2", fgMaskMOG2);
+  //imshow("Frame", frame);
+  //imshow("FG Mask MOG 2", fgMaskMOG2);
 	cv::erode(fgMaskMOG2,fore,cv::Mat());
-  imshow("erode", fore);
 	cv::dilate(fore,fore,cv::Mat());
 	//cv::dilate(fgMaskMOG2,fore,cv::Mat());
-	cv::imshow("Fore", fore);
+	//cv::imshow("Fore", fore);
 	cv::findContours( fore, // binary input image 
                                contours, // vector of vectors of points
                                CV_RETR_EXTERNAL, // retrieve only external contours
@@ -195,13 +196,13 @@ void processVideo(char* videoFilename)
                                   -1, // draw all contours
                                   cv::Scalar(0,0,255), // set color
                                   2); // set thickness
-	cv::imshow("Frame",frame);
+	//cv::imshow("Frame",frame);
 	//Approximate contours to polygons + get bounding rects and circles
   vector<vector<Point> > contours_poly( contours.size() );
 	vector<Rect> boundRect( contours.size() );
 	vector<Rect> Rect1( contours.size() );
 	vector<Rect> Rect2( contours.size() );
-	vector<Rect> Rect3( contours.size() );
+	//vector<Rect> Rect3( contours.size() );
 	vector<Rect> filteredRect( contours.size() );
 	vector<Point2f>center( contours.size() );
   vector<float>radius( contours.size() );
@@ -211,9 +212,11 @@ void processVideo(char* videoFilename)
   {
 		areaObject.push_back(i);
   	// Filtering Blob that is detected to delete false positif 
-		if(contourArea(contours[i]) >= 2)
+		if(contourArea(contours[i]) >= 1)
 		{
-			approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+			approxPolyDP( Mat(contours[i]), contours_poly[i], 4, true );
+      boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+      minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] ); 
 			Moments m1 = moments(Mat(contours_poly[i]), false);
 			//Point x(x1,y1);
     	boundRect[i] = boundingRect( Mat(contours_poly[i]) );
@@ -232,14 +235,27 @@ void processVideo(char* videoFilename)
 						Rect1[i] = boundingRect( Mat(contours_poly[i]) );
 						Rect2[i] = boundingRect( Mat(contours_poly[j]) );
 						boundRect[i] = Rect1[i] | Rect2[i];
-						filteredRect[i] = Rect1[i] | Rect2[i];
-						cout << "area " << boundRect[i].size() << endl;
+						//filteredRect[i] = Rect1[i] | Rect2[i];
 						}
 				}	
 			}
-			if( boundRect[i].area() > 400){
+			int areaPeople = 12000;
+			if( boundRect[i].area() > 1000){
 				filteredRect[i] = boundRect[i];
+				if (boundRect[i].area() < areaPeople && boundRect[i].area() > areaPeople/2){
+					totalPeople++;
+					cout << "People found 1" << endl;
+				}
+				if (boundRect[i].area() < areaPeople*2 && boundRect[i].area() > areaPeople){
+					totalPeople = totalPeople + 2;
+					cout << "People found 2" << endl;
+				}
+				if (boundRect[i].area() < areaPeople*3 && boundRect[i].area() > areaPeople*2){
+					totalPeople = totalPeople + 3;
+					cout << "People found 3" << endl;
+				}
 			}
+			//cout << "area " << (filteredRect[i].size().width * filteredRect[i].size().height)  << endl;
 			//if( boundRect[i].area() > 50){
 			//		filteredRect[i] = boundRect[i];
 			//}
@@ -264,6 +280,27 @@ void processVideo(char* videoFilename)
 			}*/
   	}
   }
+	cout << "Total People " << totalPeople << endl;
+	int garisx = 0;
+	int lengthx = 1500;
+	int garisy = 100;
+	int a;
+	int kolomx = 100;
+	int panjangkolom = 1000;
+	int kolomy = 100;
+	//line( frame, Point(garisx+lengthx ,garisy), Point(garisx+lengthx,garisy-150), Scalar( 0, 0, 0 ), 2, 8 );
+	//lengthx = lengthx - 80;
+	//line( frame, Point(garisx+lengthx ,garisy), Point(garisx+lengthx,garisy-150), Scalar( 0, 0, 0 ), 2, 8 );
+	for(a=0;a<20;a++){
+		line( frame, Point(kolomx ,kolomy), Point(kolomx,kolomy+panjangkolom), Scalar( 0, 0, 0 ), 2, 8 );
+		kolomx = kolomx + 80;
+		line( frame, Point(kolomx ,kolomy), Point(kolomx,kolomy+panjangkolom), Scalar( 0, 0, 0 ), 2, 8 );
+	}
+	for(a=0;a<10;a++){
+		line( frame, Point(garisx ,garisy), Point(garisx+lengthx,garisy), Scalar( 0, 0, 0 ), 2, 8 );
+		garisy=garisy+150;
+	}
+	//line( frame, Point(garisx ,garisy), Point(garisx+lengthx,garisy), Scalar( 0, 0, 0 ), 2, 8 );
 	//int baseline=0;
 	//Size textSize = getTextSize(text, fontFace,fontScale, thickness, &baseline);
 	//baseline += thickness;
@@ -365,12 +402,12 @@ void processVideo(char* videoFilename)
   	Mat drawing = Mat::zeros( frame.size(), CV_8UC3 );
   	for( int i = 0; i< contours.size(); i++ )
     	{
-					Scalar color_1 = Scalar(0,254,254);
+					Scalar color_1 = Scalar(255,0,255);
 					Scalar color_2 = Scalar(0,0,0);
        		Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
        		drawContours( frame, contours_poly, i, color_1, 1, 8, vector<Vec4i>(), 0, Point() );
        		//rectangle( frame, boundRect[i].tl(), boundRect[i].br(), color_1, 2, 8, 0 );
-       		rectangle( frame, filteredRect[i].tl(), filteredRect[i].br(), color_2, 2, 8, 0 );
+       		rectangle( frame, filteredRect[i].tl(), filteredRect[i].br(), color_1, 2, 8, 0 );
        		//circle( frame, center[i], (int)radius[i], color_1, 2, 8, 0 );
 		
        		//drawContours( drawing, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
@@ -421,11 +458,11 @@ void processImages(char* fistFrameFilename) {
         putText(frame, frameNumberString.c_str(), cv::Point(15, 15),
                 FONT_HERSHEY_SIMPLEX, 0.5 , cv::Scalar(0,0,0));
         //show the current frame and the fg masks
-        imshow("Frame", frame);
-        imshow("FG Mask MOG 2", fgMaskMOG2);
+        //imshow("Frame", frame);
+        //imshow("FG Mask MOG 2", fgMaskMOG2);
 	      erode(fore,fgMaskMOG2,cv::Mat());
 	      dilate(fore,fore,cv::Mat());
-	      imshow("Fore", fore);
+	      //imshow("Fore", fore);
         //get the input from the keyboard
         keyboard = waitKey( 30 );
         //search for the next image in the sequence
