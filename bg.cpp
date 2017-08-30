@@ -240,19 +240,19 @@ void processVideo(char* videoFilename)
 				}	
 			}
 			int areaPeople = 12000;
-			if( boundRect[i].area() > 1000){
+			if( boundRect[i].area() > 1000 && y1 > 100 && y1 < 550 && x1 > 420 && x1 < 1140){
 				filteredRect[i] = boundRect[i];
 				if (boundRect[i].area() < areaPeople && boundRect[i].area() > areaPeople/2){
 					totalPeople++;
-					cout << "People found 1" << endl;
+					//cout << "People found 1" << endl;
 				}
 				if (boundRect[i].area() < areaPeople*2 && boundRect[i].area() > areaPeople){
 					totalPeople = totalPeople + 2;
-					cout << "People found 2" << endl;
+					//cout << "People found 2" << endl;
 				}
 				if (boundRect[i].area() < areaPeople*3 && boundRect[i].area() > areaPeople*2){
 					totalPeople = totalPeople + 3;
-					cout << "People found 3" << endl;
+					//cout << "People found 3" << endl;
 				}
 			}
 			//cout << "area " << (filteredRect[i].size().width * filteredRect[i].size().height)  << endl;
@@ -296,10 +296,14 @@ void processVideo(char* videoFilename)
 		kolomx = kolomx + 80;
 		line( frame, Point(kolomx ,kolomy), Point(kolomx,kolomy+panjangkolom), Scalar( 0, 0, 0 ), 2, 8 );
 	}
+	//line( frame, Point((100+(80*13) ,100), Point(100+(80*13),(100+1000)), Scalar( 0, 0, 255 ), 2, 8 );
+	line( frame, Point(420 ,100), Point(420,1100), Scalar( 0, 0, 255 ), 2, 8 );
+	line( frame, Point(1140 ,100), Point(1140,1100), Scalar( 0, 0, 255 ), 2, 8 );
 	for(a=0;a<10;a++){
 		line( frame, Point(garisx ,garisy), Point(garisx+lengthx,garisy), Scalar( 0, 0, 0 ), 2, 8 );
 		garisy=garisy+150;
 	}
+	line( frame, Point(0 ,550), Point(1500,550), Scalar( 0, 0, 255 ), 2, 8 );
 	//line( frame, Point(garisx ,garisy), Point(garisx+lengthx,garisy), Scalar( 0, 0, 0 ), 2, 8 );
 	//int baseline=0;
 	//Size textSize = getTextSize(text, fontFace,fontScale, thickness, &baseline);
