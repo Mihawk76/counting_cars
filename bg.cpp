@@ -154,6 +154,10 @@ Rect combineRect(cv::Rect Rect1, cv::Rect Rect2)
 void processVideo(char* videoFilename) 
 {
 	int totalPeople;
+	//if( boundRect[i].area() > 1000 && y1 > 100 && y1 < 550 && x1 > 420 && x1 < 1140){
+	Point boundarylow(420,100);
+	Point boundaryhigh(1140,400);
+	//Point boundaryhigh(1140,550);
 	//create the capture object
 	VideoCapture capture(videoFilename);
 	if(!capture.isOpened())
@@ -240,7 +244,8 @@ void processVideo(char* videoFilename)
 				}	
 			}
 			int areaPeople = 12000;
-			if( boundRect[i].area() > 1000 && y1 > 100 && y1 < 550 && x1 > 420 && x1 < 1140){
+			if( boundRect[i].area() > 1000 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
+					&& x1 < boundaryhigh.x){
 				filteredRect[i] = boundRect[i];
 				if (boundRect[i].area() < areaPeople && boundRect[i].area() > areaPeople/2){
 					totalPeople++;
@@ -297,13 +302,13 @@ void processVideo(char* videoFilename)
 		line( frame, Point(kolomx ,kolomy), Point(kolomx,kolomy+panjangkolom), Scalar( 0, 0, 0 ), 2, 8 );
 	}
 	//line( frame, Point((100+(80*13) ,100), Point(100+(80*13),(100+1000)), Scalar( 0, 0, 255 ), 2, 8 );
-	line( frame, Point(420 ,100), Point(420,1100), Scalar( 0, 0, 255 ), 2, 8 );
-	line( frame, Point(1140 ,100), Point(1140,1100), Scalar( 0, 0, 255 ), 2, 8 );
+	line( frame, Point(boundarylow.x ,boundarylow.y), Point(boundarylow.x,1100), Scalar( 0, 0, 255 ), 2, 8 );
+	line( frame, Point(boundaryhigh.x ,100), Point(boundaryhigh.x,1100), Scalar( 0, 0, 255 ), 2, 8 );
 	for(a=0;a<10;a++){
 		line( frame, Point(garisx ,garisy), Point(garisx+lengthx,garisy), Scalar( 0, 0, 0 ), 2, 8 );
 		garisy=garisy+150;
 	}
-	line( frame, Point(0 ,550), Point(1500,550), Scalar( 0, 0, 255 ), 2, 8 );
+	line( frame, Point(0 ,boundaryhigh.y), Point(1500,boundaryhigh.y), Scalar( 0, 0, 255 ), 2, 8 );
 	//line( frame, Point(garisx ,garisy), Point(garisx+lengthx,garisy), Scalar( 0, 0, 0 ), 2, 8 );
 	//int baseline=0;
 	//Size textSize = getTextSize(text, fontFace,fontScale, thickness, &baseline);
