@@ -1,1 +1,1 @@
-./bg -vid TownCentreXVID.avi
+./bg -vid grandcentral.avi

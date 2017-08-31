@@ -238,13 +238,15 @@ void processVideo(char* videoFilename)
 					if ( distance < 50 && boundRect[i].area() > 400){
 						Rect1[i] = boundingRect( Mat(contours_poly[i]) );
 						Rect2[i] = boundingRect( Mat(contours_poly[j]) );
-						boundRect[i] = Rect1[i] | Rect2[i];
+						//boundRect[i] = Rect1[i] | Rect2[i];
 						//filteredRect[i] = Rect1[i] | Rect2[i];
 						}
 				}	
 			}
-			int areaPeople = 12000;
-			if( boundRect[i].area() > 1000 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
+			//int areaPeople = 12000;
+			int areaPeople = 170;
+			//if( boundRect[i].area() > 1000 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
+			if( boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
 					&& x1 < boundaryhigh.x){
 				filteredRect[i] = boundRect[i];
 				if (boundRect[i].area() < areaPeople && boundRect[i].area() > areaPeople/2){
@@ -259,6 +261,7 @@ void processVideo(char* videoFilename)
 					totalPeople = totalPeople + 3;
 					//cout << "People found 3" << endl;
 				}
+				//cout << filteredRect[i].area() << endl;
 			}
 			//cout << "area " << (filteredRect[i].size().width * filteredRect[i].size().height)  << endl;
 			//if( boundRect[i].area() > 50){
