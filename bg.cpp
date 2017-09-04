@@ -420,6 +420,8 @@ void processVideo(char* videoFilename)
        		drawContours( frame, contours_poly, i, color_1, 1, 8, vector<Vec4i>(), 0, Point() );
        		//rectangle( frame, boundRect[i].tl(), boundRect[i].br(), color_1, 2, 8, 0 );
        		rectangle( frame, filteredRect[i].tl(), filteredRect[i].br(), color_1, 2, 8, 0 );
+					std::string label = to_string(filteredRect[i].area());
+					putText(frame, label, filteredRect[i].tl(), FONT_HERSHEY_PLAIN, 1.0, color_1, 2.0);
        		//circle( frame, center[i], (int)radius[i], color_1, 2, 8, 0 );
 		
        		//drawContours( drawing, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
