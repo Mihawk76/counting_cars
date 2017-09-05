@@ -178,6 +178,8 @@ void processVideo(char* videoFilename)
 	}
 	//update the background model
 	pMOG2->setDetectShadows(true);
+	pMOG2->setShadowValue(0);
+	pMOG2->setShadowThreshold(0.5);
 	pMOG2->apply(frame, fgMaskMOG2);
 	//get the frame number and write it on the current frame
 	stringstream ss;
@@ -244,7 +246,7 @@ void processVideo(char* videoFilename)
 						}
 				}	
 			}
-			int areaPeople = 500;
+			int areaPeople = 5000;
 			//if( boundRect[i].area() > 1000 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
 			if( boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
 					&& x1 < boundaryhigh.x){
@@ -316,6 +318,8 @@ void processVideo(char* videoFilename)
        		Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
        		drawContours( frame, contours_poly, i, color_1, 1, 8, vector<Vec4i>(), 0, Point() );
 					if(areaperPeople[i]<2){
+					std::string label = "N:" + to_string(areaperPeople[i]) + " A:" + to_string(filteredRect[i].area());
+					putText(frame, label, filteredRect[i].tl(), FONT_HERSHEY_PLAIN, 1.0, color_4, 2.0);
        		rectangle( frame, filteredRect[i].tl(), filteredRect[i].br(), color_4, 2, 8, 0 );
 					}
 					if(areaperPeople[i]==2){
