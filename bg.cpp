@@ -120,37 +120,6 @@ int main(int argc, char* argv[])
     destroyAllWindows();
     return EXIT_SUCCESS;
 }
-Rect combineRect(cv::Rect Rect1, cv::Rect Rect2)
-{
-	Point tlCombine, brCombine;
-	tlCombine = Rect1.tl();
-	if (Rect1.tl().x<Rect2.tl().x){
-		tlCombine.x = Rect1.tl().x;
-	}
-	else{
-		tlCombine.x = Rect2.tl().x;
-	}
-	if (Rect1.tl().y>Rect2.tl().y){
-		tlCombine.y = Rect1.tl().y;
-	}
-	else{
-		tlCombine.y = Rect2.tl().y;
-	}
-	if (Rect1.br().x>Rect2.br().x){
-		brCombine.x = Rect1.br().x;
-	}
-	else{
-		brCombine.x = Rect2.br().x;
-	}
-	if (Rect1.tl().y<Rect2.tl().y){
-		tlCombine.y = Rect1.tl().y;
-	}
-	else{
-		tlCombine.y = Rect2.tl().y;
-	}
-	Rect Combine(tlCombine, brCombine);	
-	return Combine;	
-}
 void processVideo(char* videoFilename) 
 {
 	int totalPeople;
@@ -210,6 +179,7 @@ void processVideo(char* videoFilename)
 	vector<Rect> filteredRect( contours.size() );
 	vector<Point2f>center( contours.size() );
   vector<float>radius( contours.size() );
+	int areaperPeople[10000] = {0};
 	
 	//data << "# of contour size: " << contours.size() << endl ;
 	for( int i = 0; i < contours.size(); i++ )
@@ -249,18 +219,35 @@ void processVideo(char* videoFilename)
 			if( boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
 					&& x1 < boundaryhigh.x){
 				filteredRect[i] = boundRect[i];
-				if (boundRect[i].area() < areaPeople && boundRect[i].area() > areaPeople/2){
-					totalPeople++;
-					//cout << "People found 1" << endl;
-				}
-				if (boundRect[i].area() < areaPeople*2 && boundRect[i].area() > areaPeople){
-					totalPeople = totalPeople + 2;
-					//cout << "People found 2" << endl;
-				}
-				if (boundRect[i].area() < areaPeople*3 && boundRect[i].area() > areaPeople*2){
-					totalPeople = totalPeople + 3;
-					//cout << "People found 3" << endl;
-				}
+				if (boundRect[i].area() <= areaPeople && boundRect[i].area() >= areaPeople/4){
+          totalPeople++;
+          areaperPeople[i] = 1;
+          //cout << "People found 1" << endl;
+        }
+        int loop = 2;
+        //for(loop=2;loop<=2;loop++){
+        if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
+          totalPeople = totalPeople + loop;
+          areaperPeople[i] = loop;
+          //cout << "People found " << loop << endl;
+        }
+        /*loop = 3;
+          if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
+            totalPeople = totalPeople + loop;
+            areaperPeople[i] = loop;
+            //cout << "People found " << loop << endl;
+          }*/
+        //}
+        if (boundRect[i].area() < areaPeople*3 && boundRect[i].area() > areaPeople*2){
+          totalPeople = totalPeople + 3;
+          areaperPeople[i] = 3;
+          //cout << "People found 3" << endl;
+        }
+        if (boundRect[i].area() < areaPeople*4 && boundRect[i].area() > areaPeople*3){
+          totalPeople = totalPeople + 4;
+          areaperPeople[i] = 4;
+          //cout << "People found 4" << endl;
+        }
 				//cout << filteredRect[i].area() << endl;
 			}
 			//cout << "area " << (filteredRect[i].size().width * filteredRect[i].size().height)  << endl;
@@ -268,24 +255,6 @@ void processVideo(char* videoFilename)
 			//		filteredRect[i] = boundRect[i];
 			//}
     	minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );		
-			/*float x = center[i].x;
-			float y = center[i].y;
-			if (countPusLin <= 2000)
-			{
-				if ( center[i].x > 10 || center[i].y > 10)
-				{
-					pusLin[countPusLin] = center[i];
-					countPusLin++;
-					// Limiting the detection into one box and moving one array to another one.
-					// Putting all the moving object to one array 
-					if ( center[i].x > boundary1.x && center[i].x < boundary2.x && center[i].y > boundary1.y && center[i].y < boundary2.y)
-					{
-						movingObject[countMovingObject].positionObject = center[i];
-						movingObject[countMovingObject].areaObject = contourArea(contours[i]);
-						countMovingObject++;
-					}
-				}
-			}*/
   	}
   }
 	cout << "Total People " << totalPeople << endl;
@@ -312,105 +281,9 @@ void processVideo(char* videoFilename)
 		garisy=garisy+150;
 	}
 	line( frame, Point(0 ,boundaryhigh.y), Point(1500,boundaryhigh.y), Scalar( 0, 0, 255 ), 2, 8 );
-	//line( frame, Point(garisx ,garisy), Point(garisx+lengthx,garisy), Scalar( 0, 0, 0 ), 2, 8 );
-	//int baseline=0;
-	//Size textSize = getTextSize(text, fontFace,fontScale, thickness, &baseline);
-	//baseline += thickness;
-	//int carIn = 0;
-	//int count = 0;
-	//Boundary Box for motion tracking
-	//line( frame, boundary1 , Point(boundary1.x,boundary2.y), Scalar( 0, 0, 0 ), 2, 8 );
-	//line( frame, Point(boundary1.x, boundary2.y) , boundary2, Scalar( 0, 0, 0 ), 2, 8 );
-	//line( frame, boundary2 , Point(boundary2.x,boundary1.y), Scalar( 0, 0, 0 ), 2, 8 );
-	//line( frame, Point(boundary2.x, boundary1.y) , boundary1, Scalar( 0, 0, 0 ), 2, 8 );
-	//Boundary Box for counting cars
-	//int yCarMin = 250;
-	//int yCarMax = 300;
-	//int yBefore = 200;
-	//line( frame, Point(1, yCarMin) , Point(boundary2.x,yCarMin), Scalar( 0, 0, 255 ), 2, 8 );
-	//line( frame, Point(1, yCarMax) , Point(boundary2.x,yCarMax), Scalar( 0, 0, 255 ), 2, 8 );
-	//line( frame, Point(1, yBefore) , Point(boundary2.x,yBefore), Scalar( 0, 255, 255 ), 2, 8 );
-	
-	//int countObject = 0;
-	//totalMovingObject = 0;
-	/*while ( totalMovingObject < (countMovingObject-1) )
-	{
-		int bound = 30; // the variable that we consider the maximal jump of distance an obj travel
-		 //Filtering which koordinat is from the same Object, the idea is the same object move in 
-		//limited distance in a short time so we assume that if it is under bound than it is from the same object	
-		int loop = 0;
-		while ( loop <= 10 )
-		{
-			if ( ((movingObject[totalMovingObject-loop].positionObject).x) 
-			< (((movingObject[totalMovingObject].positionObject).x)+bound) 
-			&& ((movingObject[totalMovingObject-loop].positionObject).x) 
-			> (((movingObject[totalMovingObject].positionObject).x)-bound) 
-			&& ((movingObject[totalMovingObject-loop].positionObject).y) 
-			< (((movingObject[totalMovingObject].positionObject).y)+bound) 
-			&& ((movingObject[totalMovingObject-loop].positionObject).y) 
-			> (((movingObject[totalMovingObject].positionObject).y)-bound) ) 
-			{
-				line( frame, (movingObject[totalMovingObject].positionObject) 
-				, (movingObject[totalMovingObject-loop].positionObject), 
-				Scalar( 0, 0, 0 ), 2, 8 );
-				if // this collect the coordinat that passes the first line
-				( ((movingObject[totalMovingObject].positionObject).y) < yCarMax 
-		     && ((movingObject[totalMovingObject].positionObject).y) > yCarMin 
-		     && ((movingObject[totalMovingObject].positionObject).x) > 1 
-		     && ((movingObject[totalMovingObject].positionObject).x) < boundary2.x 
-				)
-				{
-					if //Condition that is allign with the desired movement
-					( 
-					  ((movingObject[totalMovingObject-loop].positionObject).y) < yCarMin 
-					  && ((movingObject[totalMovingObject-loop].positionObject).y) > yBefore 
-					  && ((movingObject[totalMovingObject-loop].positionObject).x) > 1 
-					  && ((movingObject[totalMovingObject-loop].positionObject).x) < boundary2.x )
-					{
-						//Adding variable is it is the same with the correct movement
-						carIn++;
-            if ( movingObject[totalMovingObject].areaObject < 5000 )
-            {
-                vehicleScreen = "motorcyle";
-            }
-            else
-            {
-                vehicleScreen = "car";
-            }
-						if ( std::find(areaObject.begin(), areaObject.end(), movingObject[totalMovingObject].areaObject) != areaObject.end() )
-							{}
-						else
-							{
-								countAreaObject++;
-								areaObject.push_back(countAreaObject);
-								//int coba = movingObject[totalMovingObject].areaObject;
-								areaObject[countAreaObject] = movingObject[totalMovingObject].areaObject;
-                cout << " Insert the vehicle name " << endl;
-                //getline(cin, vehicleType);
-                data << areaObject[countAreaObject] << " is " << vehicleType << endl; 
-							}
-					}
-				}	
-			}
-		loop++;
-		}
-		totalMovingObject++;
-	}
-	*/
     totalMovingObject = 0;
-	/*for (int start = 0; start <= countAreaObject; start++)
-		{
-			area << start << " area is " << areaObject[start] << " jumlah objek adalah " << countAreaObject << endl;
-      cout << start << " area is " << areaObject[start] << " jumlah objek adalah " << countAreaObject 
-			<< " jenis " << vehicleScreen << endl;
-		}*/
 	// then put the text itself
 	stringstream oss;
-	//oss << " amount " << carIn << " type " << vehicleScreen;
-	//pusat << "Car that pass " << carIn << endl;
-	//text = oss.str();
-	//putText(frame, text, Point(10, 350) , fontFace, fontScale, Scalar( 0, 0, 0 ), thickness, 8);
-	// Draw polygonal contour + bonding rects + circles
   	Mat drawing = Mat::zeros( frame.size(), CV_8UC3 );
   	for( int i = 0; i< contours.size(); i++ )
     	{
