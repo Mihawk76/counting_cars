@@ -210,7 +210,7 @@ void processVideo(char* videoFilename)
 	vector<Rect> filteredRect( contours.size() );
 	vector<Point2f>center( contours.size() );
   vector<float>radius( contours.size() );
-	int areaperPeople[contours.size()] = {0};
+	int areaperPeople[10000] = {0};
 	
 	//data << "# of contour size: " << contours.size() << endl ;
 	for( int i = 0; i < contours.size(); i++ )

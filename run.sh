@@ -1,1 +1,1 @@
-./bg -vid grandcentral.avi
+./bg -vid Nepal1.mp4
