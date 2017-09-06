@@ -121,43 +121,15 @@ int main(int argc, char* argv[])
     destroyAllWindows();
     return EXIT_SUCCESS;
 }
-Rect combineRect(cv::Rect Rect1, cv::Rect Rect2)
-{
-	Point tlCombine, brCombine;
-	tlCombine = Rect1.tl();
-	if (Rect1.tl().x<Rect2.tl().x){
-		tlCombine.x = Rect1.tl().x;
-	}
-	else{
-		tlCombine.x = Rect2.tl().x;
-	}
-	if (Rect1.tl().y>Rect2.tl().y){
-		tlCombine.y = Rect1.tl().y;
-	}
-	else{
-		tlCombine.y = Rect2.tl().y;
-	}
-	if (Rect1.br().x>Rect2.br().x){
-		brCombine.x = Rect1.br().x;
-	}
-	else{
-		brCombine.x = Rect2.br().x;
-	}
-	if (Rect1.tl().y<Rect2.tl().y){
-		tlCombine.y = Rect1.tl().y;
-	}
-	else{
-		tlCombine.y = Rect2.tl().y;
-	}
-	Rect Combine(tlCombine, brCombine);	
-	return Combine;	
-}
 void processVideo(char* videoFilename) 
 {
+  HOGDescriptor hog;
+  hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
 	int totalPeople;
-	Point boundarylow(420,100);
-	Point boundaryhigh(1140,400);
-	//Point boundaryhigh(1140,550);
+	Point boundarylow(0,100);
+	//Point boundarylow(420,100);
+	Point boundaryhigh(420,700);
+	//Point boundaryhigh(1140,400);
 	//create the capture object
 	VideoCapture capture(videoFilename);
 	if(!capture.isOpened())
@@ -212,6 +184,7 @@ void processVideo(char* videoFilename)
 	vector<Rect> filteredRect( contours.size() );
 	vector<Point2f>center( contours.size() );
   vector<float>radius( contours.size() );
+	vector<Rect> found, found_filtered;
 	int areaperPeople[10000] = {0};
 	
 	//data << "# of contour size: " << contours.size() << endl ;
@@ -230,7 +203,7 @@ void processVideo(char* videoFilename)
       float x1 = m1.m10 / m1.m00;
       float y1 = m1.m01 / m1.m00;
       //float x3 = ((boundRect[i].tl().x + boundRect[i].br().x)/2);
-      //float y3 = ((boundRect[i].tl().y + boundRect[i].br().y)/2);
+     //float y3 = ((boundRect[i].tl().y + boundRect[i].br().y)/2);
 			for( int j = 0; j < contours.size(); j++ )
   		{
       	if ( j!=i ) { 
@@ -246,7 +219,7 @@ void processVideo(char* videoFilename)
 						}
 				}	
 			}
-			int areaPeople = 5000;
+			int areaPeople = 3300;
 			//if( boundRect[i].area() > 1000 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
 			if( boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
 					&& x1 < boundaryhigh.x){
@@ -261,6 +234,18 @@ void processVideo(char* videoFilename)
 					if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
 						totalPeople = totalPeople + loop;
 						areaperPeople[i] = loop;
+						//Mat classifier(Size(320,240),CV_8UC3);
+						Mat classifier;
+						if(boundRect[i].area()>0){
+							//cout << "algoritma " << boundRect[i].tl() << endl;
+							//Rect roi(10, 10, 5, 5);
+							//frame.copyTo(classifier(roi));
+							//frame.copyTo(classifier(boundRect[i]));
+							//hog.detectMultiScale(classifier, found, -0.5, Size(8,8), Size(32,32), 1.059, 0.0);
+							//if(found.size()>0){
+							//cout << "people found" << endl;
+							//}
+						}
 						//cout << "People found " << loop << endl;
 					}
 				/*loop = 3;
