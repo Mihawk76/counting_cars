@@ -219,7 +219,7 @@ void processVideo(char* videoFilename)
 						}
 				}	
 			}
-			int areaPeople = 3300;
+			int areaPeople = 4000;
 			//if( boundRect[i].area() > 1000 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
 			if( boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
 					&& x1 < boundaryhigh.x){
