@@ -238,12 +238,9 @@ void processVideo(char* videoFilename)
 						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
 						if(boundRect[i].area()>0){
-							cout << "algoritma " << boundRect[i].tl() << endl;
+							cout << "algoritma " << boundRect[i].area() << endl;
 							Rect roi(10, 10, 50, 50);
 							frame(boundRect[i]).copyTo(classifier(boundRect[i]));
-							//frame(roi).copyTo(classifier(roi));
-							//frame.copyTo(classifier(roi));
-							//frame.copyTo(classifier(boundRect[i]));
 							hog.detectMultiScale(classifier, found, -0.5, Size(8,8), Size(32,32), 1.059, 0.0);
 							if(found.size()>0){
 							cout << "people found" << endl;
@@ -261,11 +258,33 @@ void processVideo(char* videoFilename)
 				if (boundRect[i].area() < areaPeople*3 && boundRect[i].area() > areaPeople*2){
 					totalPeople = totalPeople + 3;
 					areaperPeople[i] = 3;
+						Mat classifier(Size(2000,1000),CV_8UC3);
+						//Mat classifier(Size(320,240),CV_8UC3);
+						if(boundRect[i].area()>0){
+							cout << "algoritma " << boundRect[i].area() << endl;
+							Rect roi(10, 10, 50, 50);
+							frame(boundRect[i]).copyTo(classifier(boundRect[i]));
+							hog.detectMultiScale(classifier, found, -0.5, Size(8,8), Size(32,32), 1.059, 0.0);
+							if(found.size()>0){
+							cout << "people found" << endl;
+							}
+						}
 					//cout << "People found 3" << endl;
 				}
 				if (boundRect[i].area() < areaPeople*4 && boundRect[i].area() > areaPeople*3){
 					totalPeople = totalPeople + 4;
 					areaperPeople[i] = 4;
+						Mat classifier(Size(2000,1000),CV_8UC3);
+						//Mat classifier(Size(320,240),CV_8UC3);
+						if(boundRect[i].area()>0){
+							cout << "algoritma " << boundRect[i].area() << endl;
+							Rect roi(10, 10, 50, 50);
+							frame(boundRect[i]).copyTo(classifier(boundRect[i]));
+							hog.detectMultiScale(classifier, found, -0.5, Size(8,8), Size(32,32), 1.059, 0.0);
+							if(found.size()>0){
+							cout << "people found" << endl;
+							}
+						}
 					//cout << "People found 4" << endl;
 				}
 				
