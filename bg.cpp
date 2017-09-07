@@ -234,17 +234,20 @@ void processVideo(char* videoFilename)
 					if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
 						totalPeople = totalPeople + loop;
 						areaperPeople[i] = loop;
+						//Mat classifier((boundRect[i].size()*8),CV_8UC3);
+						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
-						Mat classifier;
 						if(boundRect[i].area()>0){
-							//cout << "algoritma " << boundRect[i].tl() << endl;
-							//Rect roi(10, 10, 5, 5);
+							cout << "algoritma " << boundRect[i].tl() << endl;
+							Rect roi(10, 10, 50, 50);
+							frame(boundRect[i]).copyTo(classifier(boundRect[i]));
+							//frame(roi).copyTo(classifier(roi));
 							//frame.copyTo(classifier(roi));
 							//frame.copyTo(classifier(boundRect[i]));
-							//hog.detectMultiScale(classifier, found, -0.5, Size(8,8), Size(32,32), 1.059, 0.0);
-							//if(found.size()>0){
-							//cout << "people found" << endl;
-							//}
+							hog.detectMultiScale(classifier, found, -0.5, Size(8,8), Size(32,32), 1.059, 0.0);
+							if(found.size()>0){
+							cout << "people found" << endl;
+							}
 						}
 						//cout << "People found " << loop << endl;
 					}
