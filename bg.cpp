@@ -172,7 +172,7 @@ void processVideo(char* videoFilename)
   //read input data. ESC or 'q' for quitting
   while( (char)keyboard != 'q' && (char)keyboard != 27 )
 	{
-    cout << "click " << click[0] << click[1]<< endl;
+    //cout << "click " << click[0] << click[1]<< endl;
     if(click[0].x == 0 && loop > 2){
       waitKey(0);
     }
