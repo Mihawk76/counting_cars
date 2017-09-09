@@ -15,7 +15,7 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
-using namespace cv;
+using namespace cv;//a
 using namespace std;
 // Global variables
 int totalMovingObject;
@@ -56,6 +56,7 @@ struct object {
 	int areaObject;
 	Point positionObject;
 };
+Point click[2];
 struct object movingObject[2000];
 //using vector
 vector<int>::size_type sz;
@@ -77,6 +78,34 @@ void help()
     << "for example: ./bs -vid video.avi"                                           << endl
     << "--------------------------------------------------------------------------" << endl
     << endl;
+}
+void CallBackFunc(int event, int x, int y, int flags, void* userdata)
+{
+     //int i;
+     if  ( event == EVENT_LBUTTONDOWN )
+     {   
+          if(click[0].x == 0 && click[1].x == 0){ 
+            click[0] = Point(x,y);
+          }
+          cout << "0 " << click[0] << " 1 " << click[1] << endl;
+          if (click[0].x != 0){ 
+            click[1] = Point(x,y);
+          }   
+          cout << "Left button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+     }   
+     else if  ( event == EVENT_RBUTTONDOWN )
+     {
+          cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+     }   
+     else if  ( event == EVENT_MBUTTONDOWN )
+     {   
+          cout << "Middle button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+     }   
+     else if ( event == EVENT_MOUSEMOVE )
+     {   
+          cout << "Mouse move over the window - position (" << x << ", " << y << ")" << endl;
+
+     }   
 }
 int main(int argc, char* argv[])
 {
@@ -104,6 +133,7 @@ int main(int argc, char* argv[])
     }
     //create GUI windows
     namedWindow("Frame");
+		setMouseCallback("Frame", CallBackFunc, NULL);
     //namedWindow("FG Mask MOG 2");
     //create Background Subtractor objects
     pMOG2 = createBackgroundSubtractorMOG2(); //MOG2 approach
@@ -126,6 +156,7 @@ void processVideo(char* videoFilename)
   HOGDescriptor hog;
   hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
 	int totalPeople;
+	int loop = 0;
 	Point boundarylow(0,100);
 	//Point boundarylow(420,100);
 	Point boundaryhigh(420,700);
@@ -141,6 +172,15 @@ void processVideo(char* videoFilename)
   //read input data. ESC or 'q' for quitting
   while( (char)keyboard != 'q' && (char)keyboard != 27 )
 	{
+    cout << "click " << click[0] << click[1]<< endl;
+    if(click[0].x == 0 && loop > 2){
+      waitKey(0);
+    }
+    loop++;
+		if(click[0].x != 0 && click[0].y != 0 && click[1].x != 0 && click[1].y != 0){
+			boundarylow = click[0];
+			boundaryhigh = click[1];
+		}
 		totalPeople = 0;
 		//read the current frame
 		if(!capture.read(frame)) {
@@ -237,7 +277,7 @@ void processVideo(char* videoFilename)
 						//Mat classifier((boundRect[i].size()*8),CV_8UC3);
 						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
-						if(boundRect[i].area()>0){
+						/*if(boundRect[i].area()>0){
 							cout << "algoritma " << boundRect[i].area() << endl;
 							Rect roi(10, 10, 50, 50);
 							frame(boundRect[i]).copyTo(classifier(boundRect[i]));
@@ -245,7 +285,7 @@ void processVideo(char* videoFilename)
 							if(found.size()>0){
 							cout << "people found" << endl;
 							}
-						}
+						}*/
 						//cout << "People found " << loop << endl;
 					}
 				/*loop = 3;
@@ -260,7 +300,7 @@ void processVideo(char* videoFilename)
 					areaperPeople[i] = 3;
 						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
-						if(boundRect[i].area()>0){
+						/*if(boundRect[i].area()>0){
 							cout << "algoritma " << boundRect[i].area() << endl;
 							Rect roi(10, 10, 50, 50);
 							frame(boundRect[i]).copyTo(classifier(boundRect[i]));
@@ -268,7 +308,7 @@ void processVideo(char* videoFilename)
 							if(found.size()>0){
 							cout << "people found" << endl;
 							}
-						}
+						}*/
 					//cout << "People found 3" << endl;
 				}
 				if (boundRect[i].area() < areaPeople*4 && boundRect[i].area() > areaPeople*3){
@@ -276,7 +316,7 @@ void processVideo(char* videoFilename)
 					areaperPeople[i] = 4;
 						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
-						if(boundRect[i].area()>0){
+						/*if(boundRect[i].area()>0){
 							cout << "algoritma " << boundRect[i].area() << endl;
 							Rect roi(10, 10, 50, 50);
 							frame(boundRect[i]).copyTo(classifier(boundRect[i]));
@@ -284,7 +324,7 @@ void processVideo(char* videoFilename)
 							if(found.size()>0){
 							cout << "people found" << endl;
 							}
-						}
+						}*/
 					//cout << "People found 4" << endl;
 				}
 				
@@ -312,6 +352,7 @@ void processVideo(char* videoFilename)
 		line( frame, Point(garisx ,garisy), Point(garisx+lengthx,garisy), Scalar( 0, 0, 0 ), 2, 8 );
 		garisy=garisy+150;
 	}
+	line( frame, Point(0 ,boundarylow.y), Point(1500,boundarylow.y), Scalar( 0, 0, 255 ), 2, 8 );
 	line( frame, Point(0 ,boundaryhigh.y), Point(1500,boundaryhigh.y), Scalar( 0, 0, 255 ), 2, 8 );
     totalMovingObject = 0;
 	stringstream oss;
@@ -352,7 +393,7 @@ void processVideo(char* videoFilename)
 					
      	}
 	//imshow( "Contours", drawing );
-	imshow( "Final Form", frame );
+	imshow( "Frame", frame );
 	Mat im;
 	//transisition to blob
     	IplImage image =  frame;
