@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
     //create GUI windows
-    namedWindow("Frame");
+    //namedWindow("Frame");
 		setMouseCallback("Frame", CallBackFunc, NULL);
     //namedWindow("FG Mask MOG 2");
     //create Background Subtractor objects
@@ -173,14 +173,15 @@ void processVideo(char* videoFilename)
   while( (char)keyboard != 'q' && (char)keyboard != 27 )
 	{
     //cout << "click " << click[0] << click[1]<< endl;
-    if(click[0].x == 0 && loop > 2){
+		//capture click and then remake boundary
+    /*if(click[0].x == 0 && loop > 2){
       waitKey(0);
     }
     loop++;
 		if(click[0].x != 0 && click[0].y != 0 && click[1].x != 0 && click[1].y != 0){
 			boundarylow = click[0];
 			boundaryhigh = click[1];
-		}
+		}*/
 		totalPeople = 0;
 		//read the current frame
 		if(!capture.read(frame)) {
@@ -393,7 +394,7 @@ void processVideo(char* videoFilename)
 					
      	}
 	//imshow( "Contours", drawing );
-	imshow( "Frame", frame );
+	//imshow( "Frame", frame );
 	Mat im;
 	//transisition to blob
     	IplImage image =  frame;
