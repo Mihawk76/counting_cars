@@ -198,6 +198,7 @@ void processVideo(char* videoFilename)
 	stringstream ss;
 	rectangle(frame, cv::Point(10, 2), cv::Point(100,20), cv::Scalar(255,255,255), -1); // bg rectangle for frame number
   ss << capture.get(CAP_PROP_POS_FRAMES);
+  cout << "Frame " << capture.get(CAP_PROP_POS_FRAMES) << endl;
   string frameNumberString = ss.str();
   putText(frame, frameNumberString.c_str(), cv::Point(15, 15), FONT_HERSHEY_SIMPLEX, 0.5 , cv::Scalar(0,0,0));
   //show the current frame and the fg masks
@@ -334,7 +335,7 @@ void processVideo(char* videoFilename)
     	minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );		
   	}
   }
-	cout << "Total People " << totalPeople << endl;
+	//cout << "Total People " << totalPeople << endl;
 	int garisx = 0;
 	int lengthx = 1500;
 	int garisy = 100;
