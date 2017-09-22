@@ -156,10 +156,12 @@ void processVideo(char* videoFilename)
   HOGDescriptor hog;
   hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
 	int totalPeople;
+	int frame_count = 0;
 	int loop = 0;
 	Point boundarylow(0,100);
-	//Point boundarylow(420,100);
 	Point boundaryhigh(420,700);
+	Point boundarylow1(0,100);
+	Point boundaryhigh1(420,700);
 	//Point boundaryhigh(1140,400);
 	//create the capture object
 	VideoCapture capture(videoFilename);
@@ -260,7 +262,6 @@ void processVideo(char* videoFilename)
 				}	
 			}
 			int areaPeople = 4000;
-			//if( boundRect[i].area() > 1000 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
 			if( boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
 					&& x1 < boundaryhigh.x){
 				filteredRect[i] = boundRect[i];
@@ -277,15 +278,6 @@ void processVideo(char* videoFilename)
 						//Mat classifier((boundRect[i].size()*8),CV_8UC3);
 						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
-						/*if(boundRect[i].area()>0){
-							cout << "algoritma " << boundRect[i].area() << endl;
-							Rect roi(10, 10, 50, 50);
-							frame(boundRect[i]).copyTo(classifier(boundRect[i]));
-							hog.detectMultiScale(classifier, found, -0.5, Size(8,8), Size(32,32), 1.059, 0.0);
-							if(found.size()>0){
-							cout << "people found" << endl;
-							}
-						}*/
 						//cout << "People found " << loop << endl;
 					}
 				/*loop = 3;
@@ -300,32 +292,57 @@ void processVideo(char* videoFilename)
 					areaperPeople[i] = 3;
 						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
-						/*if(boundRect[i].area()>0){
-							cout << "algoritma " << boundRect[i].area() << endl;
-							Rect roi(10, 10, 50, 50);
-							frame(boundRect[i]).copyTo(classifier(boundRect[i]));
-							hog.detectMultiScale(classifier, found, -0.5, Size(8,8), Size(32,32), 1.059, 0.0);
-							if(found.size()>0){
-							cout << "people found" << endl;
-							}
-						}*/
-					//cout << "People found 3" << endl;
+						//cout << "People found 3" << endl;
 				}
 				if (boundRect[i].area() < areaPeople*4 && boundRect[i].area() > areaPeople*3){
 					totalPeople = totalPeople + 4;
 					areaperPeople[i] = 4;
 						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
-						/*if(boundRect[i].area()>0){
-							cout << "algoritma " << boundRect[i].area() << endl;
-							Rect roi(10, 10, 50, 50);
-							frame(boundRect[i]).copyTo(classifier(boundRect[i]));
-							hog.detectMultiScale(classifier, found, -0.5, Size(8,8), Size(32,32), 1.059, 0.0);
-							if(found.size()>0){
-							cout << "people found" << endl;
-							}
-						}*/
-					//cout << "People found 4" << endl;
+						//cout << "People found 4" << endl;
+				}
+				
+				//cout << filteredRect[i].area() << endl;
+			}
+			areaPeople = 4000;
+			if( boundRect[i].area() > 1 && y1 > boundarylow1.y && y1 < boundaryhigh1.y && x1 > boundarylow1.x 
+					&& x1 < boundaryhigh1.x){
+				filteredRect[i] = boundRect[i];
+				if (boundRect[i].area() <= areaPeople && boundRect[i].area() >= areaPeople/4){
+					totalPeople++;
+					areaperPeople[i] = 1;
+					//cout << "People found 1" << endl;
+				}
+				int loop = 2;
+				//for(loop=2;loop<=2;loop++){
+					if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
+						totalPeople = totalPeople + loop;
+						areaperPeople[i] = loop;
+						//Mat classifier((boundRect[i].size()*8),CV_8UC3);
+						Mat classifier(Size(2000,1000),CV_8UC3);
+						//Mat classifier(Size(320,240),CV_8UC3);
+						//cout << "People found " << loop << endl;
+					}
+				/*loop = 3;
+					if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
+						totalPeople = totalPeople + loop;
+						areaperPeople[i] = loop;
+						//cout << "People found " << loop << endl;
+					}*/
+				//}
+				if (boundRect[i].area() < areaPeople*3 && boundRect[i].area() > areaPeople*2){
+					totalPeople = totalPeople + 3;
+					areaperPeople[i] = 3;
+						Mat classifier(Size(2000,1000),CV_8UC3);
+						//Mat classifier(Size(320,240),CV_8UC3);
+						//cout << "People found 3" << endl;
+				}
+				if (boundRect[i].area() < areaPeople*4 && boundRect[i].area() > areaPeople*3){
+					totalPeople = totalPeople + 4;
+					areaperPeople[i] = 4;
+						Mat classifier(Size(2000,1000),CV_8UC3);
+						//Mat classifier(Size(320,240),CV_8UC3);
+						//cout << "People found 4" << endl;
 				}
 				
 				//cout << filteredRect[i].area() << endl;
@@ -392,7 +409,13 @@ void processVideo(char* videoFilename)
        		//circle( drawing, center[i], (int)radius[i], color, 2, 8, 0 );
 					
      	}
+	if(totalPeople >= 3){
+		char filename[128];
+    sprintf(filename, "frame_%06d.jpg", frame_count);
+    cv::imwrite(filename, frame);
+	}
 	//imshow( "Contours", drawing );
+	frame_count++;
 	imshow( "Frame", frame );
 	Mat im;
 	//transisition to blob
