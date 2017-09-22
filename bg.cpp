@@ -137,16 +137,18 @@ int main(int argc, char* argv[])
     //namedWindow("FG Mask MOG 2");
     //create Background Subtractor objects
     pMOG2 = createBackgroundSubtractorMOG2(); //MOG2 approach
-    if(strcmp(argv[1], "-vid") == 0) {
+    //if(strcmp(argv[1], "-vid") == 0) {
         //input data coming from a video
         processVideo(argv[2]);
-    }
-    else {
-        //error in reading input parameters
-        cerr <<"Please, check the input parameters." << endl;
-        cerr <<"Exiting..." << endl;
-        return EXIT_FAILURE;
-    }
+				//const std::string videoStreamAddress = "http://admin:@192.168.10.10/video.cgi";
+        //processVideo(videoStreamAddress);
+    //}
+    //else {
+    //    //error in reading input parameters
+    //    cerr <<"Please, check the input parameters." << endl;
+    //    cerr <<"Exiting..." << endl;
+    //    return EXIT_FAILURE;
+    //}
     //destroy GUI windows
     destroyAllWindows();
     return EXIT_SUCCESS;
@@ -162,7 +164,10 @@ void processVideo(char* videoFilename)
 	Point boundaryhigh(420,700);
 	//Point boundaryhigh(1140,400);
 	//create the capture object
-	VideoCapture capture(videoFilename);
+	//const std::string videoStreamAddress = "http://admin:@192.168.10.10/video.cgi";
+	//const std::string videoStreamAddress = "http://admin:@10.42.0.183:80/video.cgi?.mjpg";
+	const std::string videoStreamAddress = "http://admin:@192.168.10.10:80/video.cgi?.mjpg";
+	VideoCapture capture(videoStreamAddress);
 	if(!capture.isOpened())
 	{
 		//error in opening the video input
