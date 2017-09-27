@@ -139,6 +139,7 @@ int main(int argc, char* argv[])
     pMOG2 = createBackgroundSubtractorMOG2(); //MOG2 approach
     if(strcmp(argv[1], "-vid") == 0) {
         //input data coming from a video
+        //processVideo(argv[2]);
         processVideo(argv[2]);
     }
     else {
@@ -154,6 +155,7 @@ int main(int argc, char* argv[])
 void processVideo(char* videoFilename) 
 {
   HOGDescriptor hog;
+	const std::string videoStreamAddress = "http://admin:@192.168.10.10:80/video.cgi?.mjpg";
   hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
 	int totalPeople;
 	int frame_count = 0;
@@ -165,6 +167,7 @@ void processVideo(char* videoFilename)
 	//Point boundaryhigh(1140,400);
 	//create the capture object
 	VideoCapture capture(videoFilename);
+	//VideoCapture capture(videoStreamAddress);
 	if(!capture.isOpened())
 	{
 		//error in opening the video input
