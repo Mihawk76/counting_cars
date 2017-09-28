@@ -158,6 +158,7 @@ void processVideo(char* videoFilename)
 	const std::string videoStreamAddress = "http://admin:@192.168.10.10:80/video.cgi?.mjpg";
   hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
 	int totalPeople;
+	int totalArea;
 	int frame_count = 0;
 	int loop = 0;
 	Point boundarylow(0,100);
@@ -187,6 +188,7 @@ void processVideo(char* videoFilename)
 			boundaryhigh = click[1];
 		}
 		totalPeople = 0;
+		totalArea = 0;
 		//read the current frame
 		if(!capture.read(frame)) {
 		cerr << "Unable to read next frame." << endl;
@@ -245,6 +247,7 @@ void processVideo(char* videoFilename)
 			Moments m1 = moments(Mat(contours_poly[i]), false);
 			//Point x(x1,y1);
     	boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+			totalArea = totalArea + boundRect[i].area();
       float x1 = m1.m10 / m1.m00;
       float y1 = m1.m01 / m1.m00;
       //float x3 = ((boundRect[i].tl().x + boundRect[i].br().x)/2);
@@ -307,7 +310,7 @@ void processVideo(char* videoFilename)
 				
 				//cout << filteredRect[i].area() << endl;
 			}
-			areaPeople = 4000;
+			/*areaPeople = 4000;
 			if( boundRect[i].area() > 1 && y1 > boundarylow1.y && y1 < boundaryhigh1.y && x1 > boundarylow1.x 
 					&& x1 < boundaryhigh1.x){
 				filteredRect[i] = boundRect[i];
@@ -326,14 +329,7 @@ void processVideo(char* videoFilename)
 						//Mat classifier(Size(320,240),CV_8UC3);
 						//cout << "People found " << loop << endl;
 					}
-				/*loop = 3;
-					if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
-						totalPeople = totalPeople + loop;
-						areaperPeople[i] = loop;
-						//cout << "People found " << loop << endl;
-					}*/
-				//}
-				if (boundRect[i].area() < areaPeople*3 && boundRect[i].area() > areaPeople*2){
+
 					totalPeople = totalPeople + 3;
 					areaperPeople[i] = 3;
 						Mat classifier(Size(2000,1000),CV_8UC3);
@@ -349,11 +345,11 @@ void processVideo(char* videoFilename)
 				}
 				
 				//cout << filteredRect[i].area() << endl;
-			}
+			}*/
     	minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );		
   	}
   }
-	cout << "Total People " << totalPeople << endl;
+	cout << "Total People " << totalPeople << " area " << totalArea << endl;
 	int garisx = 0;
 	int lengthx = 1500;
 	int garisy = 100;
