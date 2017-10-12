@@ -179,14 +179,14 @@ void processVideo(char* videoFilename)
   while( (char)keyboard != 'q' && (char)keyboard != 27 )
 	{
     //cout << "click " << click[0] << click[1]<< endl;
-    if(click[0].x == 0 && loop > 2){
+    /*if(click[0].x == 0 && loop > 2){
       waitKey(0);
     }
     loop++;
 		if(click[0].x != 0 && click[0].y != 0 && click[1].x != 0 && click[1].y != 0){
 			boundarylow = click[0];
 			boundaryhigh = click[1];
-		}
+		}*/
 		totalPeople = 0;
 		totalArea = 0;
 		//read the current frame
@@ -268,8 +268,8 @@ void processVideo(char* videoFilename)
 				}	
 			}
 			int areaPeople = 4000;
-			if( boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
-					&& x1 < boundaryhigh.x){
+			if( /*boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
+					&& x1 < boundaryhigh.x*/1){
 				filteredRect[i] = boundRect[i];
 				if (boundRect[i].area() <= areaPeople && boundRect[i].area() >= areaPeople/4){
 					totalPeople++;
@@ -357,7 +357,7 @@ void processVideo(char* videoFilename)
 	int kolomx = 100;
 	int panjangkolom = 1000;
 	int kolomy = 100;
-	for(a=0;a<20;a++){
+	/*for(a=0;a<20;a++){
 		line( frame, Point(kolomx ,kolomy), Point(kolomx,kolomy+panjangkolom), Scalar( 0, 0, 0 ), 2, 8 );
 		kolomx = kolomx + 80;
 		line( frame, Point(kolomx ,kolomy), Point(kolomx,kolomy+panjangkolom), Scalar( 0, 0, 0 ), 2, 8 );
@@ -369,7 +369,7 @@ void processVideo(char* videoFilename)
 		garisy=garisy+150;
 	}
 	line( frame, Point(0 ,boundarylow.y), Point(1500,boundarylow.y), Scalar( 0, 0, 255 ), 2, 8 );
-	line( frame, Point(0 ,boundaryhigh.y), Point(1500,boundaryhigh.y), Scalar( 0, 0, 255 ), 2, 8 );
+	line( frame, Point(0 ,boundaryhigh.y), Point(1500,boundaryhigh.y), Scalar( 0, 0, 255 ), 2, 8 );*/
     totalMovingObject = 0;
 	stringstream oss;
   	Mat drawing = Mat::zeros( frame.size(), CV_8UC3 );
