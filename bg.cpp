@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
     //create GUI windows
-    namedWindow("Frame");
+    //namedWindow("Frame");
 		setMouseCallback("Frame", CallBackFunc, NULL);
     //namedWindow("FG Mask MOG 2");
     //create Background Subtractor objects
@@ -415,7 +415,7 @@ void processVideo(char* videoFilename)
 	}
 	//imshow( "Contours", drawing );
 	frame_count++;
-	imshow( "Frame", frame );
+	//imshow( "Frame", frame );
 	Mat im;
 	//transisition to blob
     	IplImage image =  frame;
