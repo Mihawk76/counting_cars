@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
     //create GUI windows
-    //namedWindow("Frame");
+    namedWindow("Frame");
 		setMouseCallback("Frame", CallBackFunc, NULL);
     //namedWindow("FG Mask MOG 2");
     //create Background Subtractor objects
@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
 void processVideo(char* videoFilename) 
 {
   HOGDescriptor hog;
-	const std::string videoStreamAddress = "http://admin:@192.168.10.10:80/video.cgi?.mjpg";
+	const std::string videoStreamAddress = "http://admin:@192.168.1.57:80/video.cgi?.mjpg";
   hog.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
 	int totalPeople;
 	int totalArea;
@@ -267,25 +267,25 @@ void processVideo(char* videoFilename)
 						}
 				}	
 			}
-			int areaPeople = 4000;
+			int areaPeople = 1000;
 			if( /*boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
 					&& x1 < boundaryhigh.x*/1){
 				filteredRect[i] = boundRect[i];
-				if (boundRect[i].area() <= areaPeople && boundRect[i].area() >= areaPeople/4){
+				if (/*boundRect[i].area() <= areaPeople && */boundRect[i].area() >= areaPeople/2){
 					totalPeople++;
 					areaperPeople[i] = 1;
 					//cout << "People found 1" << endl;
 				}
 				int loop = 2;
 				//for(loop=2;loop<=2;loop++){
-					if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
+				/*	if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
 						totalPeople = totalPeople + loop;
 						areaperPeople[i] = loop;
 						//Mat classifier((boundRect[i].size()*8),CV_8UC3);
 						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
 						//cout << "People found " << loop << endl;
-					}
+					}*/
 				/*loop = 3;
 					if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
 						totalPeople = totalPeople + loop;
@@ -293,20 +293,20 @@ void processVideo(char* videoFilename)
 						//cout << "People found " << loop << endl;
 					}*/
 				//}
-				if (boundRect[i].area() < areaPeople*3 && boundRect[i].area() > areaPeople*2){
+				/*if (boundRect[i].area() < areaPeople*3 && boundRect[i].area() > areaPeople*2){
 					totalPeople = totalPeople + 3;
 					areaperPeople[i] = 3;
 						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
 						//cout << "People found 3" << endl;
-				}
-				if (boundRect[i].area() < areaPeople*4 && boundRect[i].area() > areaPeople*3){
+				}*/
+				/*if (boundRect[i].area() < areaPeople*4 && boundRect[i].area() > areaPeople*3){
 					totalPeople = totalPeople + 4;
 					areaperPeople[i] = 4;
 						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
 						//cout << "People found 4" << endl;
-				}
+				}*/
 				
 				//cout << filteredRect[i].area() << endl;
 			}
@@ -359,7 +359,7 @@ void processVideo(char* videoFilename)
 	int kolomy = 100;
 	/*for(a=0;a<20;a++){
 		line( frame, Point(kolomx ,kolomy), Point(kolomx,kolomy+panjangkolom), Scalar( 0, 0, 0 ), 2, 8 );
-		kolomx = kolomx + 80;
+	nux desktop app	kolomx = kolomx + 80;
 		line( frame, Point(kolomx ,kolomy), Point(kolomx,kolomy+panjangkolom), Scalar( 0, 0, 0 ), 2, 8 );
 	}
 	line( frame, Point(boundarylow.x ,boundarylow.y), Point(boundarylow.x,1100), Scalar( 0, 0, 255 ), 2, 8 );
@@ -383,22 +383,22 @@ void processVideo(char* videoFilename)
        		drawContours( frame, contours_poly, i, color_1, 1, 8, vector<Vec4i>(), 0, Point() );
 					if(areaperPeople[i]<2){
 					std::string label = "N:" + to_string(areaperPeople[i]) + " A:" + to_string(filteredRect[i].area());
-					putText(frame, label, filteredRect[i].tl(), FONT_HERSHEY_PLAIN, 1.0, color_4, 2.0);
+					//putText(frame, label, filteredRect[i].tl(), FONT_HERSHEY_PLAIN, 1.0, color_4, 2.0);
        		rectangle( frame, filteredRect[i].tl(), filteredRect[i].br(), color_4, 2, 8, 0 );
 					}
 					if(areaperPeople[i]==2){
 						std::string label = "N:" + to_string(areaperPeople[i]) + " A:" + to_string(filteredRect[i].area());
-						putText(frame, label, filteredRect[i].tl(), FONT_HERSHEY_PLAIN, 1.0, color_1, 2.0);
+						//putText(frame, label, filteredRect[i].tl(), FONT_HERSHEY_PLAIN, 1.0, color_1, 2.0);
        		rectangle( frame, filteredRect[i].tl(), filteredRect[i].br(), color_1, 2, 8, 0 );
 					}
 					if(areaperPeople[i]==3){
 						std::string label = "N:" + to_string(areaperPeople[i]) + " A:" + to_string(filteredRect[i].area());
-						putText(frame, label, filteredRect[i].tl(), FONT_HERSHEY_PLAIN, 1.0, color_2, 2.0);
+						//putText(frame, label, filteredRect[i].tl(), FONT_HERSHEY_PLAIN, 1.0, color_2, 2.0);
        		rectangle( frame, filteredRect[i].tl(), filteredRect[i].br(), color_2, 2, 8, 0 );
 					}
 					if(areaperPeople[i]==4){
 						std::string label = "N:" + to_string(areaperPeople[i]) + " A:" + to_string(filteredRect[i].area());
-						putText(frame, label, filteredRect[i].tl(), FONT_HERSHEY_PLAIN, 1.0, color_3, 2.0);
+						//putText(frame, label, filteredRect[i].tl(), FONT_HERSHEY_PLAIN, 1.0, color_3, 2.0);
        		rectangle( frame, filteredRect[i].tl(), filteredRect[i].br(), color_2, 2, 8, 0 );
 					}
        		//circle( frame, center[i], (int)radius[i], color_1, 2, 8, 0 );
@@ -408,14 +408,14 @@ void processVideo(char* videoFilename)
        		//circle( drawing, center[i], (int)radius[i], color, 2, 8, 0 );
 					
      	}
-	if(totalPeople >= 3){
+	if(totalPeople > 0){
 		char filename[128];
     sprintf(filename, "frame_%06d.jpg", frame_count);
     cv::imwrite(filename, frame);
 	}
 	//imshow( "Contours", drawing );
 	frame_count++;
-	//imshow( "Frame", frame );
+	imshow( "Frame", frame );
 	Mat im;
 	//transisition to blob
     	IplImage image =  frame;
