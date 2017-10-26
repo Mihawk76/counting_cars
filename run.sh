@@ -1,1 +1,1 @@
-./bg -vid Nepal1.mp4
+./bg -vid hadi-mala.avi
