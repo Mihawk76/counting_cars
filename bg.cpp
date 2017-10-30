@@ -161,10 +161,10 @@ void processVideo(char* videoFilename)
 	int totalArea;
 	int frame_count = 0;
 	int loop = 0;
-	Point boundarylow(0,100);
-	Point boundaryhigh(420,700);
-	Point boundarylow1(0,100);
-	Point boundaryhigh1(420,700);
+	Point boundarylow(2,3);
+	Point boundaryhigh(548,177);
+	Point boundarylow1(8,191);
+	Point boundaryhigh1(634,467);
 	//Point boundaryhigh(1140,400);
 	//create the capture object
 	VideoCapture capture(videoFilename);
@@ -206,6 +206,7 @@ void processVideo(char* videoFilename)
   ss << capture.get(CAP_PROP_POS_FRAMES);
   string frameNumberString = ss.str();
   putText(frame, frameNumberString.c_str(), cv::Point(15, 15), FONT_HERSHEY_SIMPLEX, 0.5 , cv::Scalar(0,0,0));
+	rectangle(frame, cv::Point(502, 2), cv::Point(615,24), cv::Scalar(255,255,255), -1); // bg rectangle for frame number
   //show the current frame and the fg masks
   //imshow("Frame", frame);
   //imshow("FG Mask MOG 2", fgMaskMOG2);
@@ -268,12 +269,14 @@ void processVideo(char* videoFilename)
 				}	
 			}
 			int areaPeople = 1000;
-			if( /*boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
-					&& x1 < boundaryhigh.x*/1){
+			if( boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
+					&& x1 < boundaryhigh.x){
 				filteredRect[i] = boundRect[i];
 				if (/*boundRect[i].area() <= areaPeople && */boundRect[i].area() >= areaPeople/2){
 					totalPeople++;
 					areaperPeople[i] = 1;
+					rectangle(frame, cv::Point(502, 2), cv::Point(615,24), cv::Scalar(255,255,255), -1); // bg rectangle for frame number
+  				putText(frame, "WARNING", cv::Point(515, 20), FONT_HERSHEY_SIMPLEX, 0.6 , cv::Scalar(0,0,255), 2);
 					//cout << "People found 1" << endl;
 				}
 				int loop = 2;
@@ -310,16 +313,18 @@ void processVideo(char* videoFilename)
 				
 				//cout << filteredRect[i].area() << endl;
 			}
-			/*areaPeople = 4000;
+			areaPeople = 1000;
 			if( boundRect[i].area() > 1 && y1 > boundarylow1.y && y1 < boundaryhigh1.y && x1 > boundarylow1.x 
 					&& x1 < boundaryhigh1.x){
 				filteredRect[i] = boundRect[i];
 				if (boundRect[i].area() <= areaPeople && boundRect[i].area() >= areaPeople/4){
 					totalPeople++;
 					areaperPeople[i] = 1;
+					rectangle(frame, cv::Point(502, 2), cv::Point(615,24), cv::Scalar(255,255,255), -1); // bg rectangle for frame number
+  				putText(frame, "CRITICAL", cv::Point(515, 20), FONT_HERSHEY_SIMPLEX, 0.6 , cv::Scalar(0,0,255), 2);
 					//cout << "People found 1" << endl;
 				}
-				int loop = 2;
+				/*int loop = 2;
 				//for(loop=2;loop<=2;loop++){
 					if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
 						totalPeople = totalPeople + loop;
@@ -342,10 +347,10 @@ void processVideo(char* videoFilename)
 						Mat classifier(Size(2000,1000),CV_8UC3);
 						//Mat classifier(Size(320,240),CV_8UC3);
 						//cout << "People found 4" << endl;
-				}
+				}*/
 				
 				//cout << filteredRect[i].area() << endl;
-			}*/
+			}
     	minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );		
   	}
   }
