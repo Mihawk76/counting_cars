@@ -161,9 +161,11 @@ void processVideo(char* videoFilename)
 	int totalArea;
 	int frame_count = 0;
 	int loop = 0;
-	Point boundarylow(2,3);
-	Point boundaryhigh(548,177);
-	Point boundarylow1(8,191);
+	Point boundarylow(2,2);
+	Point boundaryhigh(634,191);
+	Point boundarylow0(2,191);
+	Point boundaryhigh0(634,306);
+	Point boundarylow1(2,306);
 	Point boundaryhigh1(634,467);
 	//Point boundaryhigh(1140,400);
 	//create the capture object
@@ -313,6 +315,50 @@ void processVideo(char* videoFilename)
 				
 				//cout << filteredRect[i].area() << endl;
 			}
+			if( boundRect[i].area() > 1 && y1 > boundarylow0.y && y1 < boundaryhigh0.y && x1 > boundarylow0.x 
+					&& x1 < boundaryhigh0.x){
+				filteredRect[i] = boundRect[i];
+				if (/*boundRect[i].area() <= areaPeople && */boundRect[i].area() >= areaPeople/2){
+					totalPeople++;
+					areaperPeople[i] = 1;
+					rectangle(frame, cv::Point(502, 2), cv::Point(615,24), cv::Scalar(255,255,255), -1); // bg rectangle for frame number
+  				putText(frame, "BREAKING IN", cv::Point(515, 20), FONT_HERSHEY_SIMPLEX, 0.6 , cv::Scalar(0,0,255), 2);
+					//cout << "People found 1" << endl;
+				}
+				int loop = 2;
+				//for(loop=2;loop<=2;loop++){
+				/*	if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
+						totalPeople = totalPeople + loop;
+						areaperPeople[i] = loop;
+						//Mat classifier((boundRect[i].size()*8),CV_8UC3);
+						Mat classifier(Size(2000,1000),CV_8UC3);
+						//Mat classifier(Size(320,240),CV_8UC3);
+						//cout << "People found " << loop << endl;
+					}*/
+				/*loop = 3;
+					if (boundRect[i].area() <= areaPeople*loop && boundRect[i].area() > (areaPeople-(loop-1))){
+						totalPeople = totalPeople + loop;
+						areaperPeople[i] = loop;
+						//cout << "People found " << loop << endl;
+					}*/
+				//}
+				/*if (boundRect[i].area() < areaPeople*3 && boundRect[i].area() > areaPeople*2){
+					totalPeople = totalPeople + 3;
+					areaperPeople[i] = 3;
+						Mat classifier(Size(2000,1000),CV_8UC3);
+						//Mat classifier(Size(320,240),CV_8UC3);
+						//cout << "People found 3" << endl;
+				}*/
+				/*if (boundRect[i].area() < areaPeople*4 && boundRect[i].area() > areaPeople*3){
+					totalPeople = totalPeople + 4;
+					areaperPeople[i] = 4;
+						Mat classifier(Size(2000,1000),CV_8UC3);
+						//Mat classifier(Size(320,240),CV_8UC3);
+						//cout << "People found 4" << endl;
+				}*/
+				
+				//cout << filteredRect[i].area() << endl;
+			}
 			areaPeople = 1000;
 			if( boundRect[i].area() > 1 && y1 > boundarylow1.y && y1 < boundaryhigh1.y && x1 > boundarylow1.x 
 					&& x1 < boundaryhigh1.x){
@@ -367,14 +413,16 @@ void processVideo(char* videoFilename)
 	nux desktop app	kolomx = kolomx + 80;
 		line( frame, Point(kolomx ,kolomy), Point(kolomx,kolomy+panjangkolom), Scalar( 0, 0, 0 ), 2, 8 );
 	}
-	line( frame, Point(boundarylow.x ,boundarylow.y), Point(boundarylow.x,1100), Scalar( 0, 0, 255 ), 2, 8 );
-	line( frame, Point(boundaryhigh.x ,100), Point(boundaryhigh.x,1100), Scalar( 0, 0, 255 ), 2, 8 );
 	for(a=0;a<10;a++){
 		line( frame, Point(garisx ,garisy), Point(garisx+lengthx,garisy), Scalar( 0, 0, 0 ), 2, 8 );
 		garisy=garisy+150;
 	}
+	line( frame, Point(boundaryhigh.x ,100), Point(boundaryhigh.x,1100), Scalar( 0, 0, 255 ), 2, 8 );
 	line( frame, Point(0 ,boundarylow.y), Point(1500,boundarylow.y), Scalar( 0, 0, 255 ), 2, 8 );
 	line( frame, Point(0 ,boundaryhigh.y), Point(1500,boundaryhigh.y), Scalar( 0, 0, 255 ), 2, 8 );*/
+	line( frame, Point(boundarylow.x ,boundaryhigh.y), Point(boundaryhigh.x,boundaryhigh.y), Scalar( 0, 0, 255 ), 2, 8 );
+	line( frame, Point(boundarylow0.x ,boundaryhigh0.y), Point(boundaryhigh0.x,boundaryhigh0.y), Scalar( 0, 0, 255 ), 2, 8 );
+	line( frame, Point(boundarylow1.x ,boundaryhigh1.y), Point(boundaryhigh1.x,boundaryhigh1.y), Scalar( 0, 0, 255 ), 2, 8 );
     totalMovingObject = 0;
 	stringstream oss;
   	Mat drawing = Mat::zeros( frame.size(), CV_8UC3 );
