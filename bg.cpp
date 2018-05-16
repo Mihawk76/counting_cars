@@ -53,12 +53,15 @@ int countMovingObject = 0;
 int keyboard; //input from keyboard
 // struck for moving object
 struct object {
-	int id;
-	int areaObject;
+	//int id;
+	//int areaObject;
+	int frame;
 	Point positionObject;
 };
+int nMovingObject = 0;
 Point click[2];
-struct object movingObject[2000];
+//struct object movingObject[20000];
+vector <object>  movingObject ;
 //using vector
 vector<int>::size_type sz;
 std::vector<int> areaObject;
@@ -264,6 +267,13 @@ void processVideo(char* videoFilename)
       		float x2 = m2.m10 / m2.m00;
       		float y2 = m2.m01 / m2.m00;
 					float distance = sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+					object mov1;
+					nMovingObject++;
+					mov1.frame = capture.get(CAP_PROP_POS_FRAMES);
+					mov1.positionObject = Point(x1,y1);
+					movingObject.push_back(mov1);
+					//movingObject[nMovingObject].positionObject = Point(x1,y1);
+					//movingObject[nMovingObject].frame = capture.get(CAP_PROP_POS_FRAMES);
 					if ( distance < 50 && boundRect[i].area() > 400){
 						Rect1[i] = boundingRect( Mat(contours_poly[i]) );
 						Rect2[i] = boundingRect( Mat(contours_poly[j]) );
@@ -272,9 +282,31 @@ void processVideo(char* videoFilename)
 						}
 				}	
 			}
+			int trackPeople = 0;
+			float y3 = 0;
+			float x3 = 0;
+			int currentFrame = capture.get(CAP_PROP_POS_FRAMES);
+			for(int j=0;j<movingObject.size();j++)
+			{
+				//if(movingObject[j].frame <= currentFrame-2)
+				//{
+				//	movingObject.erase(movingObject.begin()+j);
+				//}
+				//else
+				//{
+					y3 = movingObject[j].positionObject.y;
+					x3 = movingObject[j].positionObject.x;
+					float distance = sqrt((x1-x3)*(x1-x3)+(y1-y3)*(y1-y3));
+					if(movingObject[j].frame > (currentFrame-2) && movingObject[j].frame < currentFrame
+							&& distance < 30)
+					{
+						trackPeople++;
+					}
+				//}
+			}
 			int areaPeople = 1000;
 			if( boundRect[i].area() > 1 && y1 > boundarylow.y && y1 < boundaryhigh.y && x1 > boundarylow.x 
-					&& x1 < boundaryhigh.x){
+					&& x1 < boundaryhigh.x && trackPeople > 3){
 				filteredRect[i] = boundRect[i];
 				if (/*boundRect[i].area() <= areaPeople && */boundRect[i].area() >= areaPeople/2){
 					totalPeople++;
